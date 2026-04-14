@@ -254,11 +254,52 @@ body.light-mode .btn-primary:hover { box-shadow:0 0 20px rgba(24,0,173,0.3); }
 @keyframes countUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
 
 /* ===== RESPONSIVE ===== */
+
+/* Tablet */
 @media(max-width:900px) {
   .grid-2,.grid-3 { grid-template-columns:1fr; }
   .pipeline { flex-wrap:wrap; justify-content:center; }
-  nav { padding:0 16px; }
+  nav { padding:0 16px; flex-wrap:wrap; height:auto; min-height:56px; gap:4px; }
+  .logo .tagline { display:none; }
+  .nav-tabs { order:3; width:100%; justify-content:center; border-top:1px solid var(--card-border); }
+  .nav-tab { padding:10px 16px; font-size:13px; }
   .section { padding:70px 16px 24px; }
+  .section-header h2 { font-size:28px; }
+  .kpi-number { font-size:48px; }
+  #canvasContainer { overflow-x:auto; -webkit-overflow-scrolling:touch; }
+  #wfCanvas { min-width:900px; }
+}
+
+/* Mobile */
+@media(max-width:600px) {
+  nav { padding:8px 12px; gap:2px; }
+  .logo .bracket { font-size:22px; }
+  .logo .word { font-size:19px; }
+  .nav-tabs { gap:0; }
+  .nav-tab { padding:8px 10px; font-size:11px; letter-spacing:1px; }
+  .nav-right { gap:8px; }
+  .mode-label { font-size:8px; }
+  .nav-status { display:none; }
+  .section { padding:60px 12px 20px; }
+  .section-header h2 { font-size:22px; letter-spacing:2px; }
+  .section-header p { font-size:12px; }
+  .kpi-number { font-size:36px; }
+  .kpi-label { font-size:8px; }
+  .grid-9 { grid-template-columns:repeat(auto-fill, minmax(90px,1fr)); gap:8px; }
+  .card { padding:16px; }
+  .card-title { font-size:15px; }
+  .stat-row { gap:12px; }
+  .stat-num { font-size:16px; }
+  .btn-primary, .btn-secondary { font-size:11px; padding:8px 16px; }
+  .text-input { font-size:13px; min-height:60px; }
+  .badge { font-size:9px; padding:3px 8px; }
+  .pipe-icon { width:38px; height:38px; font-size:14px; }
+  .pipe-label { font-size:9px; }
+  .pipe-arrow { font-size:16px; }
+  #canvasContainer { overflow-x:auto; -webkit-overflow-scrolling:touch; }
+  #wfCanvas { min-width:800px; }
+  .wf-meta { display:none; }
+  .wf-toolbar { justify-content:center; }
 }
 </style>
 </head>
@@ -502,19 +543,19 @@ body.light-mode .btn-primary:hover { box-shadow:0 0 20px rgba(24,0,173,0.3); }
   </div>
 
   <!-- Canvas toolbar -->
-  <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:var(--card-bg);border:1px solid var(--card-border);border-radius:8px 8px 0 0;margin-bottom:0;transition:all 0.4s">
-    <div style="display:flex;align-items:center;gap:16px">
+  <div class="wf-toolbar" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;padding:10px 16px;background:var(--card-bg);border:1px solid var(--card-border);border-radius:8px 8px 0 0;margin-bottom:0;transition:all 0.4s">
+    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
       <span style="font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:2px;color:var(--accent)">[WORKFLOW CANVAS]</span>
       <select class="scenario-select" id="scenarioSelect" onchange="loadScenario(this.value)">
         <option value="gaza_strike">Civilian Strike (Gaza)</option>
         <option value="campus_protest">Campus Protest (US)</option>
         <option value="un_resolution">UN Resolution Vote</option>
       </select>
-      <span style="font-size:10px;color:var(--text-secondary)" id="wfNodeCount">10 nodes</span>
-      <span style="font-size:10px;color:var(--text-secondary)">|</span>
-      <span style="font-size:10px;color:var(--text-secondary)">3 languages</span>
-      <span style="font-size:10px;color:var(--text-secondary)">|</span>
-      <span style="font-size:10px;color:var(--text-secondary)" id="wfAssetCount">18 output assets</span>
+      <span class="wf-meta" style="font-size:10px;color:var(--text-secondary)" id="wfNodeCount">10 nodes</span>
+      <span class="wf-meta" style="font-size:10px;color:var(--text-secondary)">|</span>
+      <span class="wf-meta" style="font-size:10px;color:var(--text-secondary)">3 languages</span>
+      <span class="wf-meta" style="font-size:10px;color:var(--text-secondary)">|</span>
+      <span class="wf-meta" style="font-size:10px;color:var(--text-secondary)" id="wfAssetCount">18 output assets</span>
     </div>
     <div style="display:flex;gap:8px">
       <button class="btn-secondary" style="padding:5px 14px;font-size:10px" onclick="runWorkflow()">Run Workflow</button>
@@ -651,7 +692,7 @@ function loadExample() {
   document.getElementById('adaptInput').value = 'IDF strike reported on residential building in central Gaza. Multiple civilian casualties reported by local sources. Unverified footage circulating on social media showing aftermath. Hamas-linked accounts amplifying narrative of deliberate targeting of civilians.';
 }
 
-// ===== RAPID RESPONSE ENGINE =====
+// ===== RAPID RESPONSE ENGINE =======
 async function runRRE() {
   const steps = document.querySelectorAll('#rrePipeline .pipe-step');
   const btn = document.getElementById('rreBtn');
