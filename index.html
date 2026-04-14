@@ -1,0 +1,978 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>[FRAME] Technology Platform Demo</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy: #06061A;
+  --indigo: #1800AD;
+  --blue: #4FC3F7;
+  --coral: #FF5252;
+  --coral-light: #FF8A80;
+  --white: #FFFFFF;
+  --grey: #B0B0B0;
+  --dark-grey: #666666;
+  --light-bg: #F5F5F7;
+  --border: #1A1A3A;
+  --surface: #0C0C24;
+  --surface2: #101030;
+  /* Dynamic theme vars (dark default) */
+  --bg: var(--navy);
+  --card-bg: var(--surface);
+  --card-border: var(--border);
+  --text-primary: var(--white);
+  --text-secondary: var(--grey);
+  --accent: var(--blue);
+  --nav-bg: rgba(6,6,26,0.92);
+  --canvas-bg: #080818;
+  --edge-color: rgba(79,195,247,0.22);
+  --edge-lit: #4FC3F7;
+  --dot-color: rgba(79,195,247,0.12);
+  --node-fill: #0C0C24;
+  --node-border: #2A2A5A;
+}
+body.light-mode {
+  --bg: #F5F5F7;
+  --card-bg: #FFFFFF;
+  --card-border: #E0E0E0;
+  --text-primary: #06061A;
+  --text-secondary: #666666;
+  --accent: #1800AD;
+  --nav-bg: rgba(255,255,255,0.94);
+  --canvas-bg: #F0F0F5;
+  --edge-color: rgba(24,0,173,0.22);
+  --edge-lit: #1800AD;
+  --dot-color: rgba(24,0,173,0.1);
+  --node-fill: #FFFFFF;
+  --node-border: #C8C8D8;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'Inter',sans-serif; background:var(--bg); color:var(--text-primary); overflow-x:hidden; transition:background 0.4s, color 0.4s; }
+
+/* ===== NAV ===== */
+nav {
+  position:fixed; top:0; left:0; right:0; z-index:100;
+  background:var(--nav-bg); backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--card-border);
+  display:flex; align-items:center; justify-content:space-between;
+  padding:0 40px; height:56px; transition:background 0.4s, border-color 0.4s;
+}
+.logo { display:flex; align-items:center; gap:4px; }
+.logo .bracket { font-family:'Helvetica Neue',Helvetica,Arial,sans-serif; font-weight:100; font-size:28px; color:var(--text-primary); letter-spacing:4px; transition:color 0.4s; }
+.logo .word { font-family:'Bebas Neue',sans-serif; font-size:24px; letter-spacing:5px; color:var(--text-primary); transition:color 0.4s; }
+.logo .tagline { font-family:'Inter',sans-serif; font-size:8px; letter-spacing:2.5px; text-transform:uppercase; color:var(--text-secondary); opacity:0.6; margin-left:16px; }
+.nav-tabs { display:flex; gap:0; }
+.nav-tab {
+  font-family:'Bebas Neue',sans-serif; font-size:15px; letter-spacing:2px; text-transform:uppercase;
+  padding:16px 24px; cursor:pointer; color:var(--text-secondary); border-bottom:2px solid transparent;
+  transition:all 0.3s;
+}
+.nav-tab:hover { color:var(--text-primary); }
+.nav-tab.active { color:var(--accent); border-bottom-color:var(--accent); }
+.nav-right { display:flex; align-items:center; gap:16px; }
+.nav-status { display:flex; align-items:center; gap:8px; font-size:11px; color:var(--text-secondary); }
+.status-dot { width:8px; height:8px; border-radius:50%; background:var(--accent); animation:pulse 2s infinite; }
+
+/* ===== MODE TOGGLE ===== */
+.mode-toggle {
+  width:40px; height:22px; border-radius:11px; cursor:pointer; position:relative;
+  background:var(--card-border); border:none; transition:background 0.3s;
+}
+.mode-toggle::after {
+  content:''; position:absolute; top:3px; left:3px; width:16px; height:16px;
+  border-radius:50%; background:var(--text-primary); transition:all 0.3s;
+}
+body.light-mode .mode-toggle { background:var(--accent); }
+body.light-mode .mode-toggle::after { left:21px; background:#FFFFFF; }
+.mode-label { font-size:9px; color:var(--text-secondary); letter-spacing:1px; text-transform:uppercase; }
+
+/* ===== SECTIONS ===== */
+.section { display:none; padding:80px 40px 40px; min-height:100vh; }
+.section.active { display:block; animation:fadeIn 0.5s ease; }
+.section-header { margin-bottom:36px; }
+.section-header h2 { font-family:'Bebas Neue',sans-serif; font-size:36px; letter-spacing:3px; color:var(--text-primary); text-transform:uppercase; transition:color 0.4s; }
+.section-header p { font-size:14px; color:var(--text-secondary); margin-top:4px; line-height:1.6; }
+
+/* ===== CARDS ===== */
+.card {
+  background:var(--card-bg); border:1px solid var(--card-border); border-radius:8px;
+  padding:24px; margin-bottom:20px; transition:all 0.4s;
+}
+.card:hover { border-color:rgba(79,195,247,0.3); }
+body.light-mode .card:hover { border-color:rgba(24,0,173,0.3); }
+.card-title { font-family:'Bebas Neue',sans-serif; font-size:18px; letter-spacing:2px; color:var(--accent); text-transform:uppercase; margin-bottom:12px; transition:color 0.4s; }
+
+/* ===== GRID ===== */
+.grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+.grid-3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:20px; }
+.grid-9 { display:grid; grid-template-columns:repeat(auto-fill, minmax(120px,1fr)); gap:12px; }
+
+/* ===== KPI ===== */
+.kpi { text-align:center; padding:20px; }
+.kpi-number { font-family:'Bebas Neue',sans-serif; font-size:64px; color:var(--accent); line-height:1; transition:color 0.4s; }
+.kpi-number.coral { color:var(--coral); }
+.kpi-label { font-size:10px; letter-spacing:2px; text-transform:uppercase; color:var(--text-secondary); margin-top:8px; }
+
+/* ===== BADGE ===== */
+.badge {
+  display:inline-flex; align-items:center; gap:4px;
+  padding:4px 12px; border-radius:20px; font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:1px;
+}
+.badge-blue { background:rgba(79,195,247,0.15); color:var(--blue); }
+.badge-coral { background:rgba(255,82,82,0.15); color:var(--coral); }
+.badge-green { background:rgba(102,187,106,0.15); color:#66bb6a; }
+.badge-indigo { background:rgba(24,0,173,0.2); color:#7C4DFF; }
+
+/* ===== PIPELINE ===== */
+.pipeline { display:flex; align-items:center; gap:0; margin:24px 0; overflow-x:auto; padding:8px 0; }
+.pipe-step {
+  display:flex; flex-direction:column; align-items:center; gap:8px;
+  min-width:120px; cursor:pointer; position:relative;
+}
+.pipe-icon {
+  width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+  font-size:18px; border:2px solid var(--card-border); background:var(--card-bg); transition:all 0.5s;
+}
+.pipe-step.done .pipe-icon { background:var(--accent); border-color:var(--accent); color:var(--bg); }
+.pipe-step.active .pipe-icon { border-color:var(--accent); box-shadow:0 0 20px rgba(79,195,247,0.4); animation:pulse 1.5s infinite; }
+.pipe-label { font-size:10px; color:var(--text-secondary); text-align:center; max-width:90px; letter-spacing:0.5px; }
+.pipe-step.done .pipe-label { color:var(--accent); }
+.pipe-step.active .pipe-label { color:var(--text-primary); font-weight:600; }
+.pipe-arrow { color:var(--card-border); font-size:20px; margin:0 4px; margin-bottom:20px; }
+.pipe-step.done + .pipe-arrow { color:var(--accent); }
+
+/* ===== RATIO CARD ===== */
+.ratio-card {
+  background:var(--card-bg); border:1px solid var(--card-border); border-radius:8px;
+  padding:12px; display:flex; flex-direction:column; align-items:center; gap:6px;
+  cursor:pointer; transition:all 0.3s;
+}
+.ratio-card:hover { border-color:var(--accent); }
+.ratio-card.selected { border-color:var(--accent); background:rgba(79,195,247,0.08); }
+body.light-mode .ratio-card.selected { background:rgba(24,0,173,0.06); }
+.ratio-box { border:1px solid var(--text-secondary); border-radius:2px; display:flex; align-items:center; justify-content:center; font-size:9px; color:var(--text-secondary); }
+.ratio-name { font-family:'JetBrains Mono',monospace; font-size:13px; font-weight:500; color:var(--text-primary); transition:color 0.4s; }
+.ratio-platform { font-size:9px; color:var(--text-secondary); }
+
+/* ===== TRACK PREVIEW ===== */
+.track-card {
+  background:var(--card-bg); border:1px solid var(--card-border); border-radius:8px;
+  padding:16px; flex:1; min-width:300px; transition:all 0.4s;
+}
+.track-badge { background:var(--accent); color:var(--bg); padding:3px 10px; border-radius:4px; font-size:11px; font-weight:700; display:inline-block; margin-bottom:10px; }
+.track-frame {
+  background:var(--bg); border:1px solid var(--card-border); border-radius:6px;
+  display:flex; flex-direction:column; justify-content:flex-end;
+  padding:10px; position:relative; overflow:hidden; transition:all 0.4s;
+}
+.track-frame .center-icon { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); display:flex; flex-direction:column; align-items:center; gap:4px; }
+.track-frame .subtitle-bar { background:rgba(24,0,173,0.85); border-radius:4px; padding:6px 10px; font-size:11px; color:#FFFFFF; text-align:center; }
+.track-meta { display:flex; justify-content:space-between; font-size:9px; color:var(--text-secondary); margin-top:8px; }
+
+/* ===== LANG BUTTONS ===== */
+.lang-btn {
+  padding:6px 16px; border-radius:6px; border:1px solid var(--card-border); background:var(--card-bg);
+  color:var(--text-secondary); cursor:pointer; font-size:12px; font-family:'Inter',sans-serif; transition:all 0.2s;
+}
+.lang-btn:hover { border-color:var(--accent); color:var(--text-primary); }
+.lang-btn.active { background:var(--accent); color:var(--bg); border-color:var(--accent); font-weight:600; }
+
+/* ===== WORKFLOW NODES ===== */
+.workflow-node {
+  background:var(--card-bg); border:1px solid var(--card-border); border-radius:8px;
+  padding:14px 16px; display:flex; align-items:center; gap:10px; transition:all 0.3s;
+}
+.workflow-node.highlight { border-color:var(--accent); box-shadow:0 0 15px rgba(79,195,247,0.2); }
+.node-icon { width:36px; height:36px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:16px; flex-shrink:0; }
+.node-text { flex:1; }
+.node-name { font-size:12px; font-weight:600; color:var(--text-primary); }
+.node-desc { font-size:10px; color:var(--text-secondary); margin-top:2px; }
+
+/* ===== PROCESS BTN ===== */
+.btn-primary {
+  background:var(--accent); color:var(--bg); border:none; padding:12px 32px;
+  font-family:'Bebas Neue',sans-serif; font-size:18px; letter-spacing:2px;
+  cursor:pointer; transition:all 0.3s; text-transform:uppercase;
+}
+.btn-primary:hover { box-shadow:0 0 20px rgba(79,195,247,0.4); }
+body.light-mode .btn-primary:hover { box-shadow:0 0 20px rgba(24,0,173,0.3); }
+.btn-primary:disabled { opacity:0.4; cursor:not-allowed; }
+
+.btn-secondary {
+  background:transparent; color:var(--accent); border:1px solid var(--accent); padding:8px 20px;
+  font-family:'Inter',sans-serif; font-size:12px; font-weight:600;
+  cursor:pointer; transition:all 0.3s; letter-spacing:1px; text-transform:uppercase;
+}
+
+/* ===== INPUT ===== */
+.text-input {
+  width:100%; min-height:80px; background:var(--card-bg); border:1px solid var(--card-border);
+  border-radius:8px; padding:14px; color:var(--text-primary); font-size:14px; font-family:'Inter',sans-serif;
+  resize:vertical; outline:none; transition:all 0.4s;
+}
+.text-input:focus { border-color:var(--accent); }
+.text-input::placeholder { color:var(--text-secondary); opacity:0.4; }
+
+/* ===== OUTPUT GALLERY ===== */
+.output-item {
+  background:var(--card-bg); border:1px solid var(--card-border); border-radius:8px;
+  padding:12px; display:flex; flex-direction:column; align-items:center; gap:8px; transition:all 0.4s;
+}
+.output-thumb { border-radius:4px; display:flex; align-items:center; justify-content:center; font-size:24px; background:var(--bg); }
+.output-label { font-size:10px; color:var(--text-secondary); text-align:center; }
+
+/* ===== FOOTER STATS ===== */
+.stat-row { display:flex; gap:24px; align-items:baseline; flex-wrap:wrap; }
+.stat-item { display:flex; align-items:baseline; gap:6px; }
+.stat-num { font-family:'JetBrains Mono',monospace; font-size:22px; font-weight:500; color:var(--accent); transition:color 0.4s; }
+.stat-label { font-size:11px; color:var(--text-secondary); }
+
+/* ===== INNER BOXES ===== */
+.inner-box {
+  background:var(--bg); padding:14px; border-radius:6px; transition:background 0.4s;
+}
+.inner-box-label {
+  font-size:9px; color:var(--text-secondary); text-transform:uppercase; letter-spacing:1px; margin-bottom:4px;
+}
+
+/* ===== SCENARIO SELECTOR ===== */
+.scenario-select {
+  background:var(--card-bg); border:1px solid var(--card-border); color:var(--text-primary);
+  padding:5px 10px; border-radius:6px; font-family:'Inter',sans-serif; font-size:11px;
+  cursor:pointer; outline:none; transition:all 0.3s;
+}
+.scenario-select:focus { border-color:var(--accent); }
+
+/* ===== ANIMATIONS ===== */
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
+@keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+@keyframes slideRight { from{opacity:0;transform:translateX(-20px)} to{opacity:1;transform:translateX(0)} }
+@keyframes glow { 0%,100%{box-shadow:0 0 10px rgba(79,195,247,0.2)} 50%{box-shadow:0 0 25px rgba(79,195,247,0.5)} }
+@keyframes countUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:900px) {
+  .grid-2,.grid-3 { grid-template-columns:1fr; }
+  .pipeline { flex-wrap:wrap; justify-content:center; }
+  nav { padding:0 16px; }
+  .section { padding:70px 16px 24px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ========= NAVIGATION ========= -->
+<nav>
+  <div class="logo">
+    <span class="bracket">[</span><span class="word">FRAME</span><span class="bracket">]</span>
+    <span class="tagline">SHARED INTELLIGENCE HUB</span>
+  </div>
+  <div class="nav-tabs">
+    <div class="nav-tab active" onclick="showSection('adapt',this)">Adaptation Factory</div>
+    <div class="nav-tab" onclick="showSection('pipeline',this)">Rapid Response Engine</div>
+    <div class="nav-tab" onclick="showSection('workflow',this)">Workflow Engine</div>
+  </div>
+  <div class="nav-right">
+    <div style="display:flex;align-items:center;gap:6px">
+      <span class="mode-label">Dark</span>
+      <button class="mode-toggle" onclick="toggleMode()" title="Toggle light/dark mode"></button>
+      <span class="mode-label">Light</span>
+    </div>
+    <div class="nav-status">
+      <span class="status-dot"></span>
+      <span>DEMO MODE</span>
+    </div>
+  </div>
+</nav>
+
+<!-- ========= SECTION 1: ADAPTATION FACTORY ========= -->
+<div id="adapt" class="section active">
+  <div class="section-header">
+    <h2>Adaptation Factory</h2>
+    <p>One incident, 9 formats, 3 languages, 2 tracks. Automated content adaptation for maximum reach.</p>
+  </div>
+
+  <!-- KPI strip -->
+  <div class="grid-3" style="margin-bottom:28px">
+    <div class="card kpi"><div class="kpi-number">9</div><div class="kpi-label">Platform Formats</div></div>
+    <div class="card kpi"><div class="kpi-number">3</div><div class="kpi-label">Languages</div></div>
+    <div class="card kpi"><div class="kpi-number">54</div><div class="kpi-label">Assets Generated</div></div>
+  </div>
+
+  <!-- Input -->
+  <div class="card">
+    <div class="card-title">[Input] Incident Report</div>
+    <textarea id="adaptInput" class="text-input" placeholder="Enter incident description...">IDF strike reported on residential building in central Gaza. Multiple civilian casualties reported by local sources. Unverified footage circulating on social media showing aftermath. Hamas-linked accounts amplifying narrative of deliberate targeting of civilians.</textarea>
+    <div style="display:flex;gap:12px;align-items:center;margin-top:14px">
+      <button class="btn-primary" id="adaptBtn" onclick="runAdaptation()">Process Incident</button>
+      <button class="btn-secondary" onclick="loadExample()">Load Example</button>
+      <span id="adaptStatus" style="font-size:11px;color:var(--text-secondary)"></span>
+    </div>
+  </div>
+
+  <!-- Processing Pipeline -->
+  <div id="adaptPipeline" style="display:none">
+    <div class="card">
+      <div class="card-title">[Processing] Pipeline Status</div>
+      <div class="pipeline" id="adaptSteps">
+        <div class="pipe-step" id="as1"><div class="pipe-icon">1</div><div class="pipe-label">Classify</div></div>
+        <span class="pipe-arrow">&#8594;</span>
+        <div class="pipe-step" id="as2"><div class="pipe-icon">2</div><div class="pipe-label">Analyze Narrative</div></div>
+        <span class="pipe-arrow">&#8594;</span>
+        <div class="pipe-step" id="as3"><div class="pipe-icon">3</div><div class="pipe-label">Generate Counter</div></div>
+        <span class="pipe-arrow">&#8594;</span>
+        <div class="pipe-step" id="as4"><div class="pipe-icon">4</div><div class="pipe-label">Translate</div></div>
+        <span class="pipe-arrow">&#8594;</span>
+        <div class="pipe-step" id="as5"><div class="pipe-icon">5</div><div class="pipe-label">Split Tracks</div></div>
+        <span class="pipe-arrow">&#8594;</span>
+        <div class="pipe-step" id="as6"><div class="pipe-icon">6</div><div class="pipe-label">Adapt Formats</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Results -->
+  <div id="adaptResults" style="display:none">
+    <!-- Classification -->
+    <div class="card" style="animation:fadeIn 0.5s ease">
+      <div class="card-title">[Classification] Narrative Engine Output</div>
+      <div class="grid-3" style="gap:12px">
+        <div class="inner-box">
+          <div class="inner-box-label">Category</div>
+          <div style="font-size:14px;font-weight:600;color:var(--text-primary)" id="resCategory">Civilian Harm</div>
+        </div>
+        <div class="inner-box">
+          <div class="inner-box-label">Virality Score</div>
+          <div style="font-size:14px;font-weight:600;color:var(--coral)" id="resVirality">87/100</div>
+        </div>
+        <div class="inner-box">
+          <div class="inner-box-label">Priority</div>
+          <div><span class="badge badge-coral">CRITICAL &#8212; IMMEDIATE RESPONSE</span></div>
+        </div>
+      </div>
+      <div class="inner-box" style="margin-top:12px">
+        <div class="inner-box-label">Counter-Narrative</div>
+        <div style="font-size:13px;line-height:1.6;color:var(--text-primary)" id="resCounter">IDF confirms targeted strike on Hamas command center embedded in civilian infrastructure. Advance warnings were issued to civilians via phone calls and leaflets. Hamas systematically uses civilian buildings as operational bases, a documented war crime under international law. Independent verification of casualties is ongoing.</div>
+      </div>
+    </div>
+
+    <!-- Language Selection -->
+    <div class="card" style="animation:fadeIn 0.6s ease">
+      <div class="card-title">[Output] Language &amp; Track Selection</div>
+      <div style="display:flex;gap:8px;margin-bottom:16px">
+        <button class="lang-btn active" onclick="selectLang(this,'en')">English</button>
+        <button class="lang-btn" onclick="selectLang(this,'ar')">Arabic</button>
+        <button class="lang-btn" onclick="selectLang(this,'fr')">French</button>
+      </div>
+      <div style="display:flex;gap:16px;flex-wrap:wrap" id="trackArea">
+        <!-- Track A -->
+        <div class="track-card">
+          <div class="track-badge">TRACK A</div>
+          <span style="font-size:11px;color:var(--text-secondary);margin-left:8px">Speaker + Captions</span>
+          <div class="track-frame" id="trackAFrame" style="aspect-ratio:16/9;margin-top:10px">
+            <div class="center-icon"><div style="width:40px;height:40px;border-radius:50%;border:2px solid rgba(255,255,255,0.3);display:flex;align-items:center;justify-content:center;font-size:18px">&#127908;</div><span style="font-size:9px;color:var(--text-secondary)">Speaker</span></div>
+            <div class="subtitle-bar" id="trackASub">IDF confirms targeted strike on Hamas command center embedded in civilian area</div>
+          </div>
+          <div class="track-meta"><span id="trackARatio">16:9</span><span>Civilian Harm</span></div>
+        </div>
+        <!-- Track B -->
+        <div class="track-card">
+          <div class="track-badge" style="background:var(--indigo);color:#FFFFFF">TRACK B</div>
+          <span style="font-size:11px;color:var(--text-secondary);margin-left:8px" id="trackBLabel">Translated &#8212; English</span>
+          <div class="track-frame" id="trackBFrame" style="aspect-ratio:16/9;margin-top:10px">
+            <div class="center-icon"><span style="font-size:28px" id="trackBFlag">&#127482;&#127480;</span><span style="font-size:9px;color:var(--text-secondary)" id="trackBLang">English</span></div>
+            <div class="subtitle-bar" id="trackBSub">[EN] Independent verification confirms Hamas military infrastructure in targeted building</div>
+          </div>
+          <div class="track-meta"><span id="trackBRatio">16:9</span><span>Counter-Narrative</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Aspect Ratio Grid -->
+    <div class="card" style="animation:fadeIn 0.7s ease">
+      <div class="card-title">[Formats] 9 Platform Aspect Ratios</div>
+      <p style="font-size:11px;color:var(--text-secondary);margin-bottom:14px">Click a format to preview. Each format is optimized for its platform.</p>
+      <div class="grid-9" id="ratioGrid"></div>
+    </div>
+
+    <!-- Output summary -->
+    <div class="card" style="animation:fadeIn 0.8s ease">
+      <div class="card-title">[Summary] Total Assets Generated</div>
+      <div class="stat-row">
+        <div class="stat-item"><span class="stat-num">54</span><span class="stat-label">Video assets</span></div>
+        <div class="stat-item"><span class="stat-num">27</span><span class="stat-label">Graphic cards</span></div>
+        <div class="stat-item"><span class="stat-num">3</span><span class="stat-label">Languages</span></div>
+        <div class="stat-item"><span class="stat-num">9</span><span class="stat-label">Formats each</span></div>
+        <div class="stat-item"><span class="stat-num" style="color:var(--coral)">87</span><span class="stat-label">Virality score</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========= SECTION 2: RAPID RESPONSE ENGINE ========= -->
+<div id="pipeline" class="section">
+  <div class="section-header">
+    <h2>Rapid Response Engine</h2>
+    <p>From a single Hebrew talking-head video to a full multilingual digital campaign. 7 automated stages.</p>
+  </div>
+
+  <!-- Pipeline visualization -->
+  <div class="card">
+    <div class="card-title">[Pipeline] 7-Stage Automation</div>
+    <div class="pipeline" id="rrePipeline">
+      <div class="pipe-step" data-rre="0"><div class="pipe-icon">&#127908;</div><div class="pipe-label">Transcribe (Whisper)</div></div>
+      <span class="pipe-arrow">&#8594;</span>
+      <div class="pipe-step" data-rre="1"><div class="pipe-icon">&#127760;</div><div class="pipe-label">Translate + Generate (Claude)</div></div>
+      <span class="pipe-arrow">&#8594;</span>
+      <div class="pipe-step" data-rre="2"><div class="pipe-icon">&#127897;</div><div class="pipe-label">Voice Clone (ElevenLabs)</div></div>
+      <span class="pipe-arrow">&#8594;</span>
+      <div class="pipe-step" data-rre="3"><div class="pipe-icon">&#128266;</div><div class="pipe-label">Voice-Over (Multilingual V2)</div></div>
+      <span class="pipe-arrow">&#8594;</span>
+      <div class="pipe-step" data-rre="4"><div class="pipe-icon">&#127916;</div><div class="pipe-label">Video Process (FFmpeg)</div></div>
+      <span class="pipe-arrow">&#8594;</span>
+      <div class="pipe-step" data-rre="5"><div class="pipe-icon">&#128444;</div><div class="pipe-label">Graphics (Branded)</div></div>
+      <span class="pipe-arrow">&#8594;</span>
+      <div class="pipe-step" data-rre="6"><div class="pipe-icon">&#128230;</div><div class="pipe-label">Export &amp; Package</div></div>
+    </div>
+    <div style="text-align:center;margin-top:16px">
+      <button class="btn-primary" id="rreBtn" onclick="runRRE()">Simulate Pipeline</button>
+    </div>
+  </div>
+
+  <!-- Stage detail cards -->
+  <div class="grid-2" style="margin-top:20px">
+    <div class="card">
+      <div class="card-title">[Input]</div>
+      <div class="inner-box" style="text-align:center;padding:16px">
+        <div style="font-size:48px;margin-bottom:8px">&#127909;</div>
+        <div style="font-size:13px;font-weight:600;color:var(--text-primary)">talking_head_video.mp4</div>
+        <div style="font-size:11px;color:var(--text-secondary);margin-top:4px">Hebrew source video (1:24)</div>
+        <div style="margin-top:12px;display:flex;gap:8px;justify-content:center">
+          <span class="badge badge-blue">Hebrew</span>
+          <span class="badge badge-indigo">1080p</span>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">[Output] Campaign Package</div>
+      <div class="grid-3" style="gap:8px" id="rreOutput">
+        <div class="output-item"><div class="output-thumb" style="width:80px;height:45px">&#127916;</div><div class="output-label">16:9 EN</div></div>
+        <div class="output-item"><div class="output-thumb" style="width:45px;height:80px">&#128247;</div><div class="output-label">9:16 AR</div></div>
+        <div class="output-item"><div class="output-thumb" style="width:60px;height:60px">&#127912;</div><div class="output-label">1:1 FR</div></div>
+        <div class="output-item"><div class="output-thumb" style="width:80px;height:45px">&#127908;</div><div class="output-label">16:9 AR</div></div>
+        <div class="output-item"><div class="output-thumb" style="width:45px;height:80px">&#128444;</div><div class="output-label">9:16 EN</div></div>
+        <div class="output-item"><div class="output-thumb" style="width:60px;height:60px">&#127912;</div><div class="output-label">1:1 EN</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- API Endpoints -->
+  <div class="card" style="margin-top:20px">
+    <div class="card-title">[API] Endpoints</div>
+    <div style="font-family:'JetBrains Mono',monospace;font-size:12px;line-height:2">
+      <div><span class="badge badge-green" style="min-width:50px;justify-content:center">GET</span> <span style="color:var(--accent)">/api/config</span> <span style="color:var(--text-secondary)">&#8212; Available languages, formats, brands</span></div>
+      <div><span class="badge badge-indigo" style="min-width:50px;justify-content:center">POST</span> <span style="color:var(--accent)">/api/pipeline/start</span> <span style="color:var(--text-secondary)">&#8212; Upload video + settings &#8594; job_id</span></div>
+      <div><span class="badge badge-green" style="min-width:50px;justify-content:center">GET</span> <span style="color:var(--accent)">/api/pipeline/{job_id}</span> <span style="color:var(--text-secondary)">&#8212; Job status (JSON)</span></div>
+      <div><span class="badge badge-green" style="min-width:50px;justify-content:center">GET</span> <span style="color:var(--accent)">/api/pipeline/{job_id}/stream</span> <span style="color:var(--text-secondary)">&#8212; Real-time SSE progress</span></div>
+      <div><span class="badge badge-green" style="min-width:50px;justify-content:center">GET</span> <span style="color:var(--accent)">/api/pipeline/{job_id}/results</span> <span style="color:var(--text-secondary)">&#8212; Download all assets</span></div>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="card" style="margin-top:20px">
+    <div class="card-title">[Capacity] Per Pipeline Run</div>
+    <div class="grid-3">
+      <div class="kpi"><div class="kpi-number">81</div><div class="kpi-label">Total Assets</div></div>
+      <div class="kpi"><div class="kpi-number">54</div><div class="kpi-label">Video Files</div></div>
+      <div class="kpi"><div class="kpi-number">27</div><div class="kpi-label">Branded Graphics</div></div>
+    </div>
+    <div style="text-align:center;margin-top:8px">
+      <span style="font-size:11px;color:var(--text-secondary)">3 languages &#215; 3 formats &#215; (6 video variants + 3 graphic variants) = 81 assets per incident</span>
+    </div>
+  </div>
+</div>
+
+<!-- ========= SECTION 3: WORKFLOW ENGINE ========= -->
+<div id="workflow" class="section">
+  <div class="section-header">
+    <h2>Workflow Engine</h2>
+    <p>Visual node-based workflow integrating AI services into a fully automated content pipeline.</p>
+  </div>
+
+  <!-- Canvas toolbar -->
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:var(--card-bg);border:1px solid var(--card-border);border-radius:8px 8px 0 0;margin-bottom:0;transition:all 0.4s">
+    <div style="display:flex;align-items:center;gap:16px">
+      <span style="font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:2px;color:var(--accent)">[WORKFLOW CANVAS]</span>
+      <select class="scenario-select" id="scenarioSelect" onchange="loadScenario(this.value)">
+        <option value="gaza_strike">Civilian Strike (Gaza)</option>
+        <option value="campus_protest">Campus Protest (US)</option>
+        <option value="un_resolution">UN Resolution Vote</option>
+      </select>
+      <span style="font-size:10px;color:var(--text-secondary)" id="wfNodeCount">10 nodes</span>
+      <span style="font-size:10px;color:var(--text-secondary)">|</span>
+      <span style="font-size:10px;color:var(--text-secondary)">3 languages</span>
+      <span style="font-size:10px;color:var(--text-secondary)">|</span>
+      <span style="font-size:10px;color:var(--text-secondary)" id="wfAssetCount">18 output assets</span>
+    </div>
+    <div style="display:flex;gap:8px">
+      <button class="btn-secondary" style="padding:5px 14px;font-size:10px" onclick="runWorkflow()">Run Workflow</button>
+      <button class="btn-secondary" style="padding:5px 14px;font-size:10px;border-color:var(--card-border);color:var(--text-secondary)" onclick="resetWorkflow()">Reset</button>
+    </div>
+  </div>
+
+  <!-- SVG Canvas -->
+  <div id="canvasContainer" style="background:var(--canvas-bg);border:1px solid var(--card-border);border-top:none;border-radius:0 0 8px 8px;position:relative;overflow:auto;padding:0;transition:all 0.4s">
+    <svg id="wfCanvas" width="1100" height="740" style="display:block" xmlns="http://www.w3.org/2000/svg"></svg>
+  </div>
+
+  <!-- Workflow Stats -->
+  <div class="grid-3" style="margin-top:20px">
+    <div class="card kpi"><div class="kpi-number" id="wfKpiNodes">10</div><div class="kpi-label">Workflow Nodes</div></div>
+    <div class="card kpi"><div class="kpi-number" id="wfKpiAssets">18</div><div class="kpi-label">Output Assets</div></div>
+    <div class="card kpi"><div class="kpi-number">6</div><div class="kpi-label">AI Services</div></div>
+  </div>
+
+  <!-- Node Inspector -->
+  <div class="card" style="margin-top:20px">
+    <div class="card-title">[Node Inspector]</div>
+    <div id="nodeInspector" style="font-size:12px;color:var(--text-secondary)">Click "Run Workflow" or click a node on the canvas to inspect it.</div>
+  </div>
+
+  <!-- AI Service Stack -->
+  <div class="card" style="margin-top:20px">
+    <div class="card-title">[Service Integrations]</div>
+    <div class="grid-3" style="gap:12px" id="serviceCards">
+      <div class="inner-box" style="border-left:3px solid #7C4DFF"><div style="font-size:13px;font-weight:600;color:var(--text-primary)">Claude LLM</div><div style="font-size:10px;color:var(--text-secondary);margin-top:4px">Content generation, translation, cultural adaptation across 3 languages</div></div>
+      <div class="inner-box" style="border-left:3px solid #4FC3F7"><div style="font-size:13px;font-weight:600;color:var(--text-primary)">Whisper</div><div style="font-size:10px;color:var(--text-secondary);margin-top:4px">Hebrew speech-to-text transcription with SRT timestamps</div></div>
+      <div class="inner-box" style="border-left:3px solid #FF9800"><div style="font-size:13px;font-weight:600;color:var(--text-primary)">ElevenLabs</div><div style="font-size:10px;color:var(--text-secondary);margin-top:4px">Voice cloning + multilingual TTS with lip-sync</div></div>
+      <div class="inner-box" style="border-left:3px solid #66bb6a"><div style="font-size:13px;font-weight:600;color:var(--text-primary)">Google Imagen 4</div><div style="font-size:10px;color:var(--text-secondary);margin-top:4px">AI-generated branded campaign visuals</div></div>
+      <div class="inner-box" style="border-left:3px solid #FF8A80"><div style="font-size:13px;font-weight:600;color:var(--text-primary)">Kling 3</div><div style="font-size:10px;color:var(--text-secondary);margin-top:4px">AI video generation from text-based scripts</div></div>
+      <div class="inner-box" style="border-left:3px solid #4FC3F7"><div style="font-size:13px;font-weight:600;color:var(--text-primary)">FFmpeg</div><div style="font-size:10px;color:var(--text-secondary);margin-top:4px">Video compositing, captions, branding, multi-format export</div></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== NAVIGATION =====
+function showSection(id, tab) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  if (tab) tab.classList.add('active');
+}
+
+// ===== MODE TOGGLE =====
+let isDark = true;
+function toggleMode() {
+  isDark = !isDark;
+  document.body.classList.toggle('light-mode', !isDark);
+  // Re-render workflow canvas with correct colors
+  loadScenario(document.getElementById('scenarioSelect').value);
+}
+
+// ===== ADAPTATION FACTORY =====
+const RATIOS = [
+  {name:'16:9',w:16,h:9,label:'YouTube / TV'},
+  {name:'9:16',w:9,h:16,label:'TikTok / Reels'},
+  {name:'1:1',w:1,h:1,label:'Instagram Post'},
+  {name:'4:5',w:4,h:5,label:'Instagram Feed'},
+  {name:'4:3',w:4,h:3,label:'Facebook Video'},
+  {name:'21:9',w:21,h:9,label:'Cinematic'},
+  {name:'2:3',w:2,h:3,label:'Pinterest'},
+  {name:'3:4',w:3,h:4,label:'Portrait'},
+  {name:'16:10',w:16,h:10,label:'Presentation'}
+];
+let selectedRatio = 0;
+
+const TRANSLATIONS = {
+  en: {sub:'IDF confirms targeted strike on Hamas command center embedded in civilian area',flag:'&#127482;&#127480;',lang:'English'},
+  ar: {sub:'&#1575;&#1604;&#1580;&#1610;&#1588; &#1575;&#1604;&#1573;&#1587;&#1585;&#1575;&#1574;&#1610;&#1604;&#1610; &#1610;&#1572;&#1603;&#1583; &#1590;&#1585;&#1576;&#1577; &#1605;&#1608;&#1580;&#1607;&#1577; &#1604;&#1605;&#1585;&#1603;&#1586; &#1602;&#1610;&#1575;&#1583;&#1577; &#1581;&#1605;&#1575;&#1587;',flag:'&#127480;&#127462;',lang:'Arabic'},
+  fr: {sub:"Tsahal confirme une frappe cibl\u00e9e sur un centre de commandement du Hamas",flag:'&#127467;&#127479;',lang:'French'}
+};
+
+function buildRatioGrid() {
+  const g = document.getElementById('ratioGrid');
+  g.innerHTML = '';
+  RATIOS.forEach((r,i) => {
+    const maxW=80,maxH=60,s=Math.min(maxW/r.w,maxH/r.h),w=r.w*s,h=r.h*s;
+    const d = document.createElement('div');
+    d.className = 'ratio-card' + (i===selectedRatio?' selected':'');
+    d.onclick = () => { selectedRatio=i; buildRatioGrid(); updateTrackFrames(); };
+    d.innerHTML = `<div class="ratio-box" style="width:${w}px;height:${h}px">${r.name}</div><div class="ratio-name">${r.name}</div><div class="ratio-platform">${r.label}</div>`;
+    g.appendChild(d);
+  });
+}
+
+function updateTrackFrames() {
+  const r = RATIOS[selectedRatio];
+  document.getElementById('trackAFrame').style.aspectRatio = `${r.w}/${r.h}`;
+  document.getElementById('trackBFrame').style.aspectRatio = `${r.w}/${r.h}`;
+  document.getElementById('trackARatio').textContent = r.name;
+  document.getElementById('trackBRatio').textContent = r.name;
+}
+
+function selectLang(btn, code) {
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const t = TRANSLATIONS[code];
+  document.getElementById('trackBSub').innerHTML = `[${code.toUpperCase()}] ${t.sub}`;
+  document.getElementById('trackBFlag').innerHTML = t.flag;
+  document.getElementById('trackBLang').textContent = t.lang;
+  document.getElementById('trackBLabel').textContent = `Translated \u2014 ${t.lang}`;
+}
+
+function animateStep(stepId, delay) {
+  return new Promise(resolve => {
+    setTimeout(() => {
+      const el = document.getElementById(stepId);
+      el.classList.add('active');
+      setTimeout(() => { el.classList.remove('active'); el.classList.add('done'); resolve(); }, 600);
+    }, delay);
+  });
+}
+
+async function runAdaptation() {
+  const btn = document.getElementById('adaptBtn');
+  btn.disabled = true;
+  document.getElementById('adaptPipeline').style.display = 'block';
+  document.getElementById('adaptResults').style.display = 'none';
+  document.getElementById('adaptStatus').textContent = 'Processing...';
+  for(let i=1;i<=6;i++) { const s=document.getElementById('as'+i); s.classList.remove('done','active'); }
+  for(let i=1;i<=6;i++) { await animateStep('as'+i, 400); }
+  document.getElementById('adaptResults').style.display = 'block';
+  document.getElementById('adaptStatus').textContent = 'Complete \u2014 54 assets generated';
+  btn.disabled = false;
+  buildRatioGrid();
+}
+
+function loadExample() {
+  document.getElementById('adaptInput').value = 'IDF strike reported on residential building in central Gaza. Multiple civilian casualties reported by local sources. Unverified footage circulating on social media showing aftermath. Hamas-linked accounts amplifying narrative of deliberate targeting of civilians.';
+}
+
+// ===== RAPID RESPONSE ENGINE =====
+async function runRRE() {
+  const steps = document.querySelectorAll('#rrePipeline .pipe-step');
+  const btn = document.getElementById('rreBtn');
+  btn.disabled = true;
+  steps.forEach(s => { s.classList.remove('done','active'); });
+  for(let i=0;i<steps.length;i++) {
+    steps[i].classList.add('active');
+    await new Promise(r => setTimeout(r, 700));
+    steps[i].classList.remove('active');
+    steps[i].classList.add('done');
+  }
+  btn.disabled = false;
+}
+
+// ===== WORKFLOW ENGINE =====
+// Scenario definitions
+const SCENARIOS = {
+  gaza_strike: {
+    title: '"Wait for Facts" Campaign',
+    desc: 'IDF civilian strike in Gaza \u2014 rapid counter-narrative production',
+    nodes: [
+      {id:'trigger',x:40,y:48,w:160,h:64,label:'EVENT TRIGGER',name:'Breaking News',desc:'Gaza civilian strike report',color:'#4FC3F7',headerColor:'#1800AD'},
+      {id:'claude',x:300,y:138,w:180,h:64,label:'CLAUDE LLM',name:'Script + Translation',desc:'EN / AR / FR content generation',color:'#7C4DFF',headerColor:'#7C4DFF'},
+      {id:'whisper',x:300,y:228,w:180,h:64,label:'WHISPER',name:'Transcribe Audio',desc:'Hebrew speech to SRT + text',color:'#4FC3F7',headerColor:'#4FC3F7'},
+      {id:'eleven',x:560,y:228,w:180,h:64,label:'ELEVENLABS',name:'Voice Clone + TTS',desc:'Multilingual V2 + Sync Pro',color:'#FF9800',headerColor:'#FF9800'},
+      {id:'imagen',x:560,y:348,w:180,h:64,label:'GOOGLE IMAGEN 4',name:'Campaign Visuals',desc:'AI-generated branded images',color:'#66bb6a',headerColor:'#66bb6a'},
+      {id:'kling',x:560,y:448,w:180,h:64,label:'KLING 3',name:'Video Generation',desc:'AI video from text scripts',color:'#FF8A80',headerColor:'#FF5252'},
+      {id:'ffmpeg',x:800,y:348,w:180,h:64,label:'FFMPEG PROCESSOR',name:'Compose + Brand',desc:'Captions, watermark, audio mix',color:'#4FC3F7',headerColor:'#4FC3F7'},
+      {id:'out1',x:850,y:516,w:120,h:48,label:'OUTPUT',name:'9:16 Portrait',desc:'',color:'#7C4DFF',headerColor:'#1800AD',small:true},
+      {id:'out2',x:850,y:596,w:120,h:48,label:'OUTPUT',name:'16:9 Landscape',desc:'',color:'#7C4DFF',headerColor:'#1800AD',small:true},
+      {id:'out3',x:850,y:676,w:120,h:48,label:'OUTPUT',name:'1:1 Square',desc:'',color:'#7C4DFF',headerColor:'#1800AD',small:true}
+    ],
+    edges: [
+      {from:[200,80],to:[300,170]},
+      {from:[200,80],to:[300,260]},
+      {from:[480,170],to:[560,260]},
+      {from:[480,170],to:[560,380]},
+      {from:[480,260],to:[480,170],dash:true},
+      {from:[480,170],to:[560,480]},
+      {from:[740,260],to:[800,380]},
+      {from:[740,380],to:[850,540]},
+      {from:[740,480],to:[800,380]},
+      {from:[980,380],to:[910,620]},
+      {from:[980,380],to:[910,700]},
+      {from:[740,380],to:[910,700]},
+      {from:[740,380],to:[910,620]}
+    ],
+    connectors: [[200,80],[300,170],[300,260],[480,170],[480,260],[560,260],[560,380],[560,480],[740,260],[740,380],[740,480],[800,380],[980,380],[850,540],[850,620],[850,700]],
+    nodeCount: 10, assetCount: 18,
+    langBadges: [{x:858,y:560},{x:858,y:640},{x:858,y:720}]
+  },
+  campus_protest: {
+    title: 'Campus Protest Response',
+    desc: 'Anti-Israel campus protest \u2014 rapid fact-check and social media response',
+    nodes: [
+      {id:'trigger',x:40,y:80,w:160,h:64,label:'SOCIAL LISTENER',name:'Protest Detected',desc:'Campus anti-Israel protest alert',color:'#FF5252',headerColor:'#FF5252'},
+      {id:'claude',x:280,y:48,w:180,h:64,label:'CLAUDE LLM',name:'Fact-Check Engine',desc:'Verify claims, generate rebuttals',color:'#7C4DFF',headerColor:'#7C4DFF'},
+      {id:'context',x:280,y:148,w:180,h:64,label:'CONTEXT ENGINE',name:'Historical Context',desc:'Map claims to verified facts',color:'#4FC3F7',headerColor:'#4FC3F7'},
+      {id:'imagen',x:540,y:48,w:180,h:64,label:'GOOGLE IMAGEN 4',name:'Infographic Generator',desc:'Fact-check visual cards',color:'#66bb6a',headerColor:'#66bb6a'},
+      {id:'eleven',x:540,y:148,w:180,h:64,label:'ELEVENLABS',name:'Audio Explainer',desc:'Short-form audio responses',color:'#FF9800',headerColor:'#FF9800'},
+      {id:'ffmpeg',x:540,y:248,w:180,h:64,label:'FFMPEG PROCESSOR',name:'Video Assembly',desc:'Combine visuals + audio + text',color:'#4FC3F7',headerColor:'#4FC3F7'},
+      {id:'out1',x:800,y:48,w:140,h:48,label:'OUTPUT',name:'Twitter/X Thread',desc:'',color:'#7C4DFF',headerColor:'#1800AD',small:true},
+      {id:'out2',x:800,y:128,w:140,h:48,label:'OUTPUT',name:'Instagram Story',desc:'',color:'#7C4DFF',headerColor:'#1800AD',small:true},
+      {id:'out3',x:800,y:208,w:140,h:48,label:'OUTPUT',name:'TikTok Short',desc:'',color:'#7C4DFF',headerColor:'#1800AD',small:true},
+      {id:'out4',x:800,y:288,w:140,h:48,label:'OUTPUT',name:'Fact-Check PDF',desc:'',color:'#7C4DFF',headerColor:'#1800AD',small:true}
+    ],
+    edges: [
+      {from:[200,112],to:[280,80]},
+      {from:[200,112],to:[280,180]},
+      {from:[460,80],to:[540,80]},
+      {from:[460,80],to:[540,180]},
+      {from:[460,180],to:[540,280]},
+      {from:[460,180],to:[460,80],dash:true},
+      {from:[720,80],to:[800,72]},
+      {from:[720,180],to:[800,152]},
+      {from:[720,280],to:[800,232]},
+      {from:[720,80],to:[800,312]}
+    ],
+    connectors: [[200,112],[280,80],[280,180],[460,80],[460,180],[540,80],[540,180],[540,280],[720,80],[720,180],[720,280],[800,72],[800,152],[800,232],[800,312]],
+    nodeCount: 10, assetCount: 12,
+    langBadges: [{x:808,y:90},{x:808,y:170},{x:808,y:250},{x:808,y:330}]
+  },
+  un_resolution: {
+    title: 'UN Resolution Response',
+    desc: 'Anti-Israel UN resolution \u2014 multi-audience diplomatic counter-campaign',
+    nodes: [
+      {id:'trigger',x:40,y:140,w:160,h:64,label:'NEWS FEED',name:'Resolution Alert',desc:'UN vote detected via wire feeds',color:'#FF5252',headerColor:'#FF5252'},
+      {id:'claude',x:280,y:60,w:190,h:64,label:'CLAUDE LLM',name:'Legal Analysis',desc:'Resolution text parsing + precedent',color:'#7C4DFF',headerColor:'#7C4DFF'},
+      {id:'talking',x:280,y:160,w:190,h:64,label:'CLAUDE LLM',name:'Talking Points',desc:'Audience-specific messaging (5 tracks)',color:'#7C4DFF',headerColor:'#7C4DFF'},
+      {id:'data',x:280,y:260,w:190,h:64,label:'DATA ENGINE',name:'Vote Visualization',desc:'Country-by-country vote mapping',color:'#4FC3F7',headerColor:'#4FC3F7'},
+      {id:'imagen',x:560,y:60,w:180,h:64,label:'GOOGLE IMAGEN 4',name:'Branded Graphics',desc:'Quote cards + vote map visuals',color:'#66bb6a',headerColor:'#66bb6a'},
+      {id:'eleven',x:560,y:160,w:180,h:64,label:'ELEVENLABS',name:'Audio Briefs',desc:'Ambassador-style audio briefs',color:'#FF9800',headerColor:'#FF9800'},
+      {id:'ffmpeg',x:560,y:260,w:180,h:64,label:'FFMPEG PROCESSOR',name:'Campaign Package',desc:'Video + data viz compositing',color:'#4FC3F7',headerColor:'#4FC3F7'},
+      {id:'out1',x:830,y:48,w:140,h:48,label:'OUTPUT',name:'Diplomatic Brief',desc:'',color:'#7C4DFF',headerColor:'#1800AD',small:true},
+      {id:'out2',x:830,y:128,w:140,h:48,label:'OUTPUT',name:'Social Campaign',desc:'',color:'#7C4DFF',headerColor:'#1800AD',small:true},
+      {id:'out3',x:830,y:208,w:140,h:48,label:'OUTPUT',name:'Media Package',desc:'',color:'#7C4DFF',headerColor:'#1800AD',small:true},
+      {id:'out4',x:830,y:288,w:140,h:48,label:'OUTPUT',name:'Data Dashboard',desc:'',color:'#7C4DFF',headerColor:'#1800AD',small:true}
+    ],
+    edges: [
+      {from:[200,172],to:[280,92]},
+      {from:[200,172],to:[280,192]},
+      {from:[200,172],to:[280,292]},
+      {from:[470,92],to:[560,92]},
+      {from:[470,192],to:[560,192]},
+      {from:[470,292],to:[560,292]},
+      {from:[470,92],to:[560,192],dash:true},
+      {from:[740,92],to:[830,72]},
+      {from:[740,92],to:[830,152]},
+      {from:[740,192],to:[830,152]},
+      {from:[740,192],to:[830,232]},
+      {from:[740,292],to:[830,312]},
+      {from:[740,292],to:[830,232]}
+    ],
+    connectors: [[200,172],[280,92],[280,192],[280,292],[470,92],[470,192],[470,292],[560,92],[560,192],[560,292],[740,92],[740,192],[740,292],[830,72],[830,152],[830,232],[830,312]],
+    nodeCount: 11, assetCount: 24,
+    langBadges: [{x:838,y:90},{x:838,y:170},{x:838,y:250},{x:838,y:330}]
+  }
+};
+
+const WF_NODE_INFO = {
+  'trigger': {name:'Event Trigger',desc:'Detects breaking news. Pulls raw reports from social media, news feeds, and partner alerts. Initiates the full pipeline.',color:'#4FC3F7'},
+  'claude': {name:'Claude LLM (Anthropic)',desc:'Generates fact-checking scripts in English, Arabic, and French. Produces counter-narratives with cultural adaptation per audience. Creates captions and hashtags.',color:'#7C4DFF'},
+  'whisper': {name:'Whisper (Replicate)',desc:'Transcribes Hebrew source audio to text + SRT timestamps. Provides transcript to Claude for translation and content generation.',color:'#4FC3F7'},
+  'eleven': {name:'ElevenLabs TTS',desc:'Clones original speaker voice profile. Generates multilingual voice-overs using Multilingual V2. Applies Sync 2 Pro lip-sync for natural delivery.',color:'#FF9800'},
+  'imagen': {name:'Google Imagen 4',desc:'Creates AI-generated branded campaign visuals. Produces static images for each language with gradient backgrounds, slogans, and brand elements.',color:'#66bb6a'},
+  'kling': {name:'Kling 3',desc:'Generates AI video content from text-based scripts. Creates campaign videos that can be composited with voice-over and branding.',color:'#FF8A80'},
+  'ffmpeg': {name:'FFmpeg Processor',desc:'Composites video + audio + captions + watermark. Burns in subtitles. Mixes audio: original at -30%, voice-over at +100%. Exports to all formats.',color:'#4FC3F7'},
+  'out1': {name:'Format Output 1',desc:'Multi-language output package. 3 languages x (video + graphic) assets.',color:'#7C4DFF'},
+  'out2': {name:'Format Output 2',desc:'Multi-language output package. 3 languages x (video + graphic) assets.',color:'#7C4DFF'},
+  'out3': {name:'Format Output 3',desc:'Multi-language output package. 3 languages x (video + graphic) assets.',color:'#7C4DFF'},
+  'out4': {name:'Format Output 4',desc:'Compiled data and analysis package.',color:'#7C4DFF'},
+  'context': {name:'Context Engine',desc:'Maps protest claims to verified historical facts. Provides sourced data points for rebuttals.',color:'#4FC3F7'},
+  'talking': {name:'Talking Points Generator',desc:'Creates audience-specific messaging tracks: diplomatic, media, social, academic, and grassroots.',color:'#7C4DFF'},
+  'data': {name:'Data Engine',desc:'Real-time vote tracking and country-by-country analysis. Generates interactive data visualizations.',color:'#4FC3F7'},
+};
+
+let currentScenario = 'gaza_strike';
+let currentNodes = [];
+
+function getThemeColors() {
+  const cs = getComputedStyle(document.body);
+  return {
+    edgeColor: cs.getPropertyValue('--edge-color').trim(),
+    edgeLit: cs.getPropertyValue('--edge-lit').trim(),
+    dotColor: cs.getPropertyValue('--dot-color').trim(),
+    nodeFill: cs.getPropertyValue('--node-fill').trim(),
+    nodeBorder: cs.getPropertyValue('--node-border').trim(),
+    canvasBg: cs.getPropertyValue('--canvas-bg').trim(),
+    textPrimary: cs.getPropertyValue('--text-primary').trim(),
+    textSecondary: cs.getPropertyValue('--text-secondary').trim(),
+  };
+}
+
+function buildSVG(scenario) {
+  const svg = document.getElementById('wfCanvas');
+  const sc = SCENARIOS[scenario];
+  const tc = getThemeColors();
+
+  // Calculate needed height
+  let maxY = 0;
+  sc.nodes.forEach(n => { const bottom = n.y + n.h + 30; if (bottom > maxY) maxY = bottom; });
+  const svgHeight = Math.max(400, maxY + 40);
+  svg.setAttribute('height', svgHeight);
+
+  let html = '';
+  // Defs
+  html += `<defs>
+    <marker id="arrow" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="none" stroke="${tc.edgeColor}" stroke-width="1"/></marker>
+    <marker id="arrowLit" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="none" stroke="${tc.edgeLit}" stroke-width="1.5"/></marker>
+    <filter id="glow"><feGaussianBlur stdDeviation="4" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <filter id="edgeGlow"><feGaussianBlur stdDeviation="2" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  </defs>`;
+
+  // Grid dots
+  html += `<pattern id="dots" width="20" height="20" patternUnits="userSpaceOnUse"><circle cx="10" cy="10" r="0.5" fill="${tc.dotColor}"/></pattern>`;
+  html += `<rect width="100%" height="100%" fill="url(#dots)"/>`;
+
+  // Edges with visible color
+  html += `<g id="wfEdges">`;
+  sc.edges.forEach(e => {
+    const [x1,y1] = e.from;
+    const [x2,y2] = e.to;
+    const mx1 = x1 + (x2-x1)*0.4;
+    const mx2 = x1 + (x2-x1)*0.6;
+    const dashAttr = e.dash ? ' stroke-dasharray="6,4"' : '';
+    // Glow layer (thicker, more transparent)
+    html += `<path class="wf-edge-glow" d="M${x1},${y1} C${mx1},${y1} ${mx2},${y2} ${x2},${y2}" fill="none" stroke="${tc.edgeLit}" stroke-width="4" stroke-opacity="0.08"${dashAttr}/>`;
+    // Main edge
+    html += `<path class="wf-edge" d="M${x1},${y1} C${mx1},${y1} ${mx2},${y2} ${x2},${y2}" fill="none" stroke="${tc.edgeLit}" stroke-width="1.5" stroke-opacity="0.3"${dashAttr} filter="url(#edgeGlow)"/>`;
+  });
+  html += `</g>`;
+
+  // Connectors (port circles)
+  sc.connectors.forEach(([cx,cy]) => {
+    html += `<circle cx="${cx}" cy="${cy}" r="4" fill="${tc.nodeFill}" stroke="${tc.nodeBorder}" stroke-width="1.5"/>`;
+  });
+
+  // Nodes
+  sc.nodes.forEach((n,i) => {
+    const isSmall = n.small;
+    const headerH = isSmall ? 18 : 22;
+    html += `<g class="wf-node" data-nid="${n.id}" data-order="${i}" style="cursor:pointer">`;
+    html += `<rect x="${n.x}" y="${n.y}" width="${n.w}" height="${n.h}" rx="${isSmall?6:8}" fill="${tc.nodeFill}" stroke="${tc.nodeBorder}" stroke-width="1.5"/>`;
+    html += `<rect x="${n.x}" y="${n.y}" width="${n.w}" height="${headerH}" rx="${isSmall?6:8}" fill="${n.headerColor}" opacity="0.2"/>`;
+    const labelSize = isSmall ? 8 : 9;
+    const nameSize = isSmall ? 11 : 12;
+    const labelY = n.y + (isSmall ? 13 : 16);
+    const nameY = n.y + (isSmall ? 35 : 40);
+    const descY = nameY + 14;
+    html += `<text x="${n.x+12}" y="${labelY}" font-size="${labelSize}" fill="${n.color}" font-family="Inter" font-weight="600" letter-spacing="1">${n.label}</text>`;
+    html += `<text x="${n.x+12}" y="${nameY}" font-size="${nameSize}" fill="${tc.textPrimary}" font-family="Inter" font-weight="600">${n.name}</text>`;
+    if (n.desc) {
+      html += `<text x="${n.x+16}" y="${descY}" font-size="9" fill="${tc.textSecondary}" font-family="Inter">${n.desc}</text>`;
+    }
+    html += `</g>`;
+  });
+
+  // Language badges
+  if (sc.langBadges) {
+    html += `<g font-size="8" font-family="JetBrains Mono" font-weight="500">`;
+    sc.langBadges.forEach(b => {
+      html += `<text x="${b.x}" y="${b.y}" fill="${tc.edgeLit}">EN  AR  FR</text>`;
+    });
+    html += `</g>`;
+  }
+
+  svg.innerHTML = html;
+
+  // Bind click events
+  svg.querySelectorAll('.wf-node').forEach(node => {
+    node.addEventListener('click', () => {
+      // Reset all
+      svg.querySelectorAll('.wf-node rect:first-child').forEach(r => { r.setAttribute('stroke', tc.nodeBorder); r.setAttribute('stroke-width','1.5'); });
+      // Highlight
+      const rect = node.querySelector('rect');
+      rect.setAttribute('stroke', tc.edgeLit);
+      rect.setAttribute('stroke-width','2.5');
+      rect.style.filter = 'url(#glow)';
+      const nid = node.getAttribute('data-nid');
+      showNodeInfo(nid, sc);
+    });
+  });
+
+  // Update counts
+  currentNodes = sc.nodes.map(n => n.id);
+  document.getElementById('wfNodeCount').textContent = sc.nodeCount + ' nodes';
+  document.getElementById('wfAssetCount').textContent = sc.assetCount + ' output assets';
+  document.getElementById('wfKpiNodes').textContent = sc.nodeCount;
+  document.getElementById('wfKpiAssets').textContent = sc.assetCount;
+}
+
+function loadScenario(id) {
+  currentScenario = id;
+  buildSVG(id);
+  const sc = SCENARIOS[id];
+  document.getElementById('nodeInspector').innerHTML = `<div style="font-size:13px;font-weight:600;color:var(--text-primary);margin-bottom:4px">${sc.title}</div><div style="font-size:12px;color:var(--text-secondary)">${sc.desc}. Click "Run Workflow" or click a node to inspect it.</div>`;
+}
+
+function showNodeInfo(nid, sc) {
+  // Try scenario-specific node data first, then global
+  const nodeData = sc ? sc.nodes.find(n => n.id === nid) : null;
+  const info = WF_NODE_INFO[nid];
+  if (!info && !nodeData) return;
+  const name = nodeData ? nodeData.name : (info ? info.name : nid);
+  const desc = info ? info.desc : (nodeData ? nodeData.desc : '');
+  const color = info ? info.color : (nodeData ? nodeData.color : '#4FC3F7');
+  const el = document.getElementById('nodeInspector');
+  el.innerHTML = `<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><div style="width:12px;height:12px;border-radius:3px;background:${color}"></div><span style="font-size:14px;font-weight:600;color:var(--text-primary)">${name}</span></div><div style="font-size:12px;color:var(--text-secondary);line-height:1.7">${desc}</div>`;
+}
+
+async function runWorkflow() {
+  resetWorkflow();
+  const sc = SCENARIOS[currentScenario];
+  const tc = getThemeColors();
+  const svg = document.getElementById('wfCanvas');
+  const edges = svg.querySelectorAll('.wf-edge');
+  const glows = svg.querySelectorAll('.wf-edge-glow');
+  const nodes = svg.querySelectorAll('.wf-node');
+  let edgeIdx = 0;
+
+  for (let i = 0; i < nodes.length; i++) {
+    const node = nodes[i];
+    const rect = node.querySelector('rect');
+    const nid = node.getAttribute('data-nid');
+    // Activate
+    rect.setAttribute('stroke', tc.edgeLit);
+    rect.setAttribute('stroke-width', '2.5');
+    rect.style.filter = 'url(#glow)';
+    showNodeInfo(nid, sc);
+
+    // Light up edges
+    if (edgeIdx < edges.length && i > 0) {
+      edges[edgeIdx].setAttribute('stroke', tc.edgeLit);
+      edges[edgeIdx].setAttribute('stroke-opacity', '0.9');
+      edges[edgeIdx].setAttribute('stroke-width', '2');
+      if (glows[edgeIdx]) { glows[edgeIdx].setAttribute('stroke-opacity', '0.25'); }
+      edgeIdx++;
+      if (i >= 3 && edgeIdx < edges.length) {
+        edges[edgeIdx].setAttribute('stroke', tc.edgeLit);
+        edges[edgeIdx].setAttribute('stroke-opacity', '0.9');
+        edges[edgeIdx].setAttribute('stroke-width', '2');
+        if (glows[edgeIdx]) { glows[edgeIdx].setAttribute('stroke-opacity', '0.25'); }
+        edgeIdx++;
+      }
+    }
+
+    await new Promise(r => setTimeout(r, 600));
+    // Settle
+    rect.setAttribute('stroke', tc.edgeLit);
+    rect.setAttribute('stroke-width', '1.5');
+    rect.style.filter = '';
+  }
+}
+
+function resetWorkflow() {
+  loadScenario(currentScenario);
+}
+
+// Init
+buildRatioGrid();
+loadScenario('gaza_strike');
+</script>
+</body>
+</html>
