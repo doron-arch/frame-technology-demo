@@ -4,6 +4,7 @@ function showSection(id, tab) {
   document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
   document.getElementById(id).classList.add('active');
   if (tab) tab.classList.add('active');
+  if (typeof window.writeUrlState === 'function') window.writeUrlState();
 }
 
 // ===== MODE TOGGLE =====
