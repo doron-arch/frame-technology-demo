@@ -1,0 +1,45 @@
+:root {
+  --navy: #06061A;
+  --indigo: #1800AD;
+  --blue: #4FC3F7;
+  --coral: #FF5252;
+  --coral-light: #FF8A80;
+  --white: #FFFFFF;
+  --grey: #B0B0B0;
+  --dark-grey: #666666;
+  --light-bg: #F5F5F7;
+  --border: #1A1A3A;
+  --surface: #0C0C24;
+  --surface2: #101030;
+  /* Dynamic theme vars (dark default) */
+  --bg: var(--navy);
+  --card-bg: var(--surface);
+  --card-border: var(--border);
+  --text-primary: var(--white);
+  --text-secondary: var(--grey);
+  --accent: var(--blue);
+  --nav-bg: rgba(6,6,26,0.92);
+  --canvas-bg: #080818;
+  --edge-color: rgba(79,195,247,0.22);
+  --edge-lit: #4FC3F7;
+  --dot-color: rgba(79,195,247,0.12);
+  --node-fill: #0C0C24;
+  --node-border: #2A2A5A;
+}
+body.light-mode {
+  --bg: #F5F5F7;
+  --card-bg: #FFFFFF;
+  --card-border: #E0E0E0;
+  --text-primary: #06061A;
+  --text-secondary: #666666;
+  --accent: #1800AD;
+  --nav-bg: rgba(255,255,255,0.94);
+  --canvas-bg: #F0F0F5;
+  --edge-color: rgba(24,0,173,0.22);
+  --edge-lit: #1800AD;
+  --dot-color: rgba(24,0,173,0.1);
+  --node-fill: #FFFFFF;
+  --node-border: #C8C8D8;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'Inter',sans-serif; background:var(--bg); color:var(--text-primary); overflow-x:hidden; transition:background 0.4s, color 0.4s; }
