@@ -1,0 +1,42 @@
+/* FRAME Tooltip (Phase 8) */
+.frame-tooltip {
+  position: absolute;
+  background: #1A2058;
+  color: #FFFFFF;
+  font-size: 11px;
+  padding: 6px 12px;
+  border-radius: 4px;
+  border: 1px solid #2E3880;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+  z-index: 9999;
+  pointer-events: none;
+  font-family: 'Inter', sans-serif;
+  letter-spacing: 0.5px;
+  max-width: 300px;
+  white-space: normal;
+  line-height: 1.4;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 120ms ease;
+}
+.frame-tooltip.visible {
+  opacity: 1;
+  visibility: visible;
+}
+.frame-tooltip-arrow {
+  position: absolute;
+  width: 0;
+  height: 0;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+}
+.frame-tooltip.above .frame-tooltip-arrow {
+  top: 100%;
+  border-top: 6px solid #1A2058;
+  transform: translateX(-50%);
+}
+.frame-tooltip.below .frame-tooltip-arrow {
+  bottom: 100%;
+  border-bottom: 6px solid #1A2058;
+  transform: translateX(-50%);
+}
