@@ -8,6 +8,7 @@
 <link rel="stylesheet" href="css/tokens.css">
 <link rel="stylesheet" href="css/layout.css">
 <link rel="stylesheet" href="css/components.css">
+<link rel="stylesheet" href="css/tooltip.css">
 </head>
 <body>
 
@@ -18,17 +19,17 @@
     <span class="tagline">SHARED INTELLIGENCE HUB</span>
   </div>
   <div class="nav-tabs">
-    <div class="nav-tab active" onclick="showSection('adapt',this)">Adaptation Factory</div>
-    <div class="nav-tab" onclick="showSection('pipeline',this)">Rapid Response Engine</div>
-    <div class="nav-tab" onclick="showSection('workflow',this)">Workflow Engine</div>
+    <div class="nav-tab active" onclick="showSection('adapt',this)" data-tooltip="Turn one incident into 9 formats × 3 languages × 2 tracks" data-tooltip-below="true" tabindex="0">Adaptation Factory</div>
+    <div class="nav-tab" onclick="showSection('pipeline',this)" data-tooltip="7-stage automated pipeline: Hebrew video in → multilingual campaign out" data-tooltip-below="true" tabindex="0">Rapid Response Engine</div>
+    <div class="nav-tab" onclick="showSection('workflow',this)" data-tooltip="Visual node-based pipeline integrating 6 AI services" data-tooltip-below="true" tabindex="0">Workflow Engine</div>
   </div>
   <div class="nav-right">
     <div style="display:flex;align-items:center;gap:6px">
       <span class="mode-label">Dark</span>
-      <button class="mode-toggle" onclick="toggleMode()" title="Toggle light/dark mode"></button>
+      <button class="mode-toggle" onclick="toggleMode()" title="Toggle light/dark mode" data-tooltip="Switch between light and dark theme" data-tooltip-below="true"></button>
       <span class="mode-label">Light</span>
     </div>
-    <div class="nav-status">
+    <div class="nav-status" data-tooltip="This is a simulation. No real content is generated." data-tooltip-below="true" tabindex="0">
       <span class="status-dot"></span>
       <span>DEMO MODE</span>
     </div>
@@ -44,9 +45,9 @@
 
   <!-- KPI strip -->
   <div class="grid-3" style="margin-bottom:28px">
-    <div class="card kpi"><div class="kpi-number">9</div><div class="kpi-label">Platform Formats</div></div>
-    <div class="card kpi"><div class="kpi-number">3</div><div class="kpi-label">Languages</div></div>
-    <div class="card kpi"><div class="kpi-number">54</div><div class="kpi-label">Assets Generated</div></div>
+    <div class="card kpi" data-tooltip="16:9, 9:16, 1:1, and 6 more — auto-rendered per platform"><div class="kpi-number">9</div><div class="kpi-label">Platform Formats</div></div>
+    <div class="card kpi" data-tooltip="English, Arabic, French — content localized per region"><div class="kpi-number">3</div><div class="kpi-label">Languages</div></div>
+    <div class="card kpi" data-tooltip="9 formats × 3 languages × 2 tracks per incident"><div class="kpi-number">54</div><div class="kpi-label">Assets Generated</div></div>
   </div>
 
   <!-- Input -->
@@ -54,8 +55,8 @@
     <div class="card-title">[Input] Incident Report</div>
     <textarea id="adaptInput" class="text-input" placeholder="Enter incident description...">IDF strike reported on residential building in central Gaza. Multiple civilian casualties reported by local sources. Unverified footage circulating on social media showing aftermath. Hamas-linked accounts amplifying narrative of deliberate targeting of civilians.</textarea>
     <div style="display:flex;gap:12px;align-items:center;margin-top:14px">
-      <button class="btn-primary" id="adaptBtn" onclick="runAdaptation()">Process Incident</button>
-      <button class="btn-secondary" onclick="loadExample()">Load Example</button>
+      <button class="btn-primary" id="adaptBtn" onclick="runAdaptation()" data-tooltip="Run classify → counter-narrative → translate → split → format">Process Incident</button>
+      <button class="btn-secondary" onclick="loadExample()" data-tooltip="Load a pre-filled incident description to demo the pipeline">Load Example</button>
       <span id="adaptStatus" style="font-size:11px;color:var(--text-secondary)"></span>
     </div>
   </div>
@@ -65,17 +66,17 @@
     <div class="card">
       <div class="card-title">[Processing] Pipeline Status</div>
       <div class="pipeline" id="adaptSteps">
-        <div class="pipe-step" id="as1"><div class="pipe-icon">1</div><div class="pipe-label">Classify</div></div>
+        <div class="pipe-step" id="as1" data-tooltip="Narrative engine classifies incident category" tabindex="0"><div class="pipe-icon">1</div><div class="pipe-label">Classify</div></div>
         <span class="pipe-arrow">&#8594;</span>
-        <div class="pipe-step" id="as2"><div class="pipe-icon">2</div><div class="pipe-label">Analyze Narrative</div></div>
+        <div class="pipe-step" id="as2" data-tooltip="Identify themes, virality, and priority" tabindex="0"><div class="pipe-icon">2</div><div class="pipe-label">Analyze Narrative</div></div>
         <span class="pipe-arrow">&#8594;</span>
-        <div class="pipe-step" id="as3"><div class="pipe-icon">3</div><div class="pipe-label">Generate Counter</div></div>
+        <div class="pipe-step" id="as3" data-tooltip="LLM drafts a counter-narrative response" tabindex="0"><div class="pipe-icon">3</div><div class="pipe-label">Generate Counter</div></div>
         <span class="pipe-arrow">&#8594;</span>
-        <div class="pipe-step" id="as4"><div class="pipe-icon">4</div><div class="pipe-label">Translate</div></div>
+        <div class="pipe-step" id="as4" data-tooltip="Translate to target languages with cultural adaptation" tabindex="0"><div class="pipe-icon">4</div><div class="pipe-label">Translate</div></div>
         <span class="pipe-arrow">&#8594;</span>
-        <div class="pipe-step" id="as5"><div class="pipe-icon">5</div><div class="pipe-label">Split Tracks</div></div>
+        <div class="pipe-step" id="as5" data-tooltip="Track A: Speaker + captions. Track B: Counter-narrative" tabindex="0"><div class="pipe-icon">5</div><div class="pipe-label">Split Tracks</div></div>
         <span class="pipe-arrow">&#8594;</span>
-        <div class="pipe-step" id="as6"><div class="pipe-icon">6</div><div class="pipe-label">Adapt Formats</div></div>
+        <div class="pipe-step" id="as6" data-tooltip="Render into 9 platform aspect ratios" tabindex="0"><div class="pipe-icon">6</div><div class="pipe-label">Adapt Formats</div></div>
       </div>
     </div>
   </div>
@@ -109,9 +110,9 @@
     <div class="card" style="animation:fadeIn 0.6s ease">
       <div class="card-title">[Output] Language &amp; Track Selection</div>
       <div style="display:flex;gap:8px;margin-bottom:16px">
-        <button class="lang-btn active" onclick="selectLang(this,'en')">English</button>
-        <button class="lang-btn" onclick="selectLang(this,'ar')">Arabic</button>
-        <button class="lang-btn" onclick="selectLang(this,'fr')">French</button>
+        <button class="lang-btn active" onclick="selectLang(this,'en')" data-tooltip="Preview English output">English</button>
+        <button class="lang-btn" onclick="selectLang(this,'ar')" data-tooltip="Preview Arabic output">Arabic</button>
+        <button class="lang-btn" onclick="selectLang(this,'fr')" data-tooltip="Preview French output">French</button>
       </div>
       <div style="display:flex;gap:16px;flex-wrap:wrap" id="trackArea">
         <!-- Track A -->
@@ -169,22 +170,22 @@
   <div class="card">
     <div class="card-title">[Pipeline] 7-Stage Automation</div>
     <div class="pipeline" id="rrePipeline">
-      <div class="pipe-step" data-rre="0"><div class="pipe-icon">&#127908;</div><div class="pipe-label">Transcribe (Whisper)</div></div>
+      <div class="pipe-step" data-rre="0" data-tooltip="Whisper transcribes Hebrew source with SRT timestamps" tabindex="0"><div class="pipe-icon">&#127908;</div><div class="pipe-label">Transcribe (Whisper)</div></div>
       <span class="pipe-arrow">&#8594;</span>
-      <div class="pipe-step" data-rre="1"><div class="pipe-icon">&#127760;</div><div class="pipe-label">Translate + Generate (Claude)</div></div>
+      <div class="pipe-step" data-rre="1" data-tooltip="Claude translates and generates localized scripts" tabindex="0"><div class="pipe-icon">&#127760;</div><div class="pipe-label">Translate + Generate (Claude)</div></div>
       <span class="pipe-arrow">&#8594;</span>
-      <div class="pipe-step" data-rre="2"><div class="pipe-icon">&#127897;</div><div class="pipe-label">Voice Clone (ElevenLabs)</div></div>
+      <div class="pipe-step" data-rre="2" data-tooltip="ElevenLabs clones the speaker voice" tabindex="0"><div class="pipe-icon">&#127897;</div><div class="pipe-label">Voice Clone (ElevenLabs)</div></div>
       <span class="pipe-arrow">&#8594;</span>
-      <div class="pipe-step" data-rre="3"><div class="pipe-icon">&#128266;</div><div class="pipe-label">Voice-Over (Multilingual V2)</div></div>
+      <div class="pipe-step" data-rre="3" data-tooltip="Multilingual V2 renders voice-over in each language" tabindex="0"><div class="pipe-icon">&#128266;</div><div class="pipe-label">Voice-Over (Multilingual V2)</div></div>
       <span class="pipe-arrow">&#8594;</span>
-      <div class="pipe-step" data-rre="4"><div class="pipe-icon">&#127916;</div><div class="pipe-label">Video Process (FFmpeg)</div></div>
+      <div class="pipe-step" data-rre="4" data-tooltip="FFmpeg composites video with new audio and captions" tabindex="0"><div class="pipe-icon">&#127916;</div><div class="pipe-label">Video Process (FFmpeg)</div></div>
       <span class="pipe-arrow">&#8594;</span>
-      <div class="pipe-step" data-rre="5"><div class="pipe-icon">&#128444;</div><div class="pipe-label">Graphics (Branded)</div></div>
+      <div class="pipe-step" data-rre="5" data-tooltip="Branded graphic cards generated per format" tabindex="0"><div class="pipe-icon">&#128444;</div><div class="pipe-label">Graphics (Branded)</div></div>
       <span class="pipe-arrow">&#8594;</span>
-      <div class="pipe-step" data-rre="6"><div class="pipe-icon">&#128230;</div><div class="pipe-label">Export &amp; Package</div></div>
+      <div class="pipe-step" data-rre="6" data-tooltip="Package 81 assets per run (video + graphics)" tabindex="0"><div class="pipe-icon">&#128230;</div><div class="pipe-label">Export &amp; Package</div></div>
     </div>
     <div style="text-align:center;margin-top:16px">
-      <button class="btn-primary" id="rreBtn" onclick="runRRE()">Simulate Pipeline</button>
+      <button class="btn-primary" id="rreBtn" onclick="runRRE()" data-tooltip="Simulate the full 7-stage pipeline end-to-end">Simulate Pipeline</button>
     </div>
   </div>
 
@@ -231,9 +232,9 @@
   <div class="card" style="margin-top:20px">
     <div class="card-title">[Capacity] Per Pipeline Run</div>
     <div class="grid-3">
-      <div class="kpi"><div class="kpi-number">81</div><div class="kpi-label">Total Assets</div></div>
-      <div class="kpi"><div class="kpi-number">54</div><div class="kpi-label">Video Files</div></div>
-      <div class="kpi"><div class="kpi-number">27</div><div class="kpi-label">Branded Graphics</div></div>
+      <div class="kpi" data-tooltip="3 languages × 3 formats × 9 variants = 81 assets"><div class="kpi-number">81</div><div class="kpi-label">Total Assets</div></div>
+      <div class="kpi" data-tooltip="6 video variants × 3 formats × 3 languages"><div class="kpi-number">54</div><div class="kpi-label">Video Files</div></div>
+      <div class="kpi" data-tooltip="3 graphic variants × 3 formats × 3 languages"><div class="kpi-number">27</div><div class="kpi-label">Branded Graphics</div></div>
     </div>
     <div style="text-align:center;margin-top:8px">
       <span style="font-size:11px;color:var(--text-secondary)">3 languages &#215; 3 formats &#215; (6 video variants + 3 graphic variants) = 81 assets per incident</span>
@@ -252,7 +253,7 @@
   <div class="wf-toolbar" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;padding:10px 16px;background:var(--card-bg);border:1px solid var(--card-border);border-radius:8px 8px 0 0;margin-bottom:0;transition:all 0.4s">
     <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
       <span style="font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:2px;color:var(--accent)">[WORKFLOW CANVAS]</span>
-      <select class="scenario-select" id="scenarioSelect" onchange="loadScenario(this.value)">
+      <select class="scenario-select" id="scenarioSelect" onchange="loadScenario(this.value)" data-tooltip="Switch between demo scenarios">
         <option value="gaza_strike">Civilian Strike (Gaza)</option>
         <option value="campus_protest">Campus Protest (US)</option>
         <option value="un_resolution">UN Resolution Vote</option>
@@ -264,8 +265,8 @@
       <span class="wf-meta" style="font-size:10px;color:var(--text-secondary)" id="wfAssetCount">18 output assets</span>
     </div>
     <div style="display:flex;gap:8px">
-      <button class="btn-secondary" style="padding:5px 14px;font-size:10px" onclick="runWorkflow()">Run Workflow</button>
-      <button class="btn-secondary" style="padding:5px 14px;font-size:10px;border-color:var(--card-border);color:var(--text-secondary)" onclick="resetWorkflow()">Reset</button>
+      <button class="btn-secondary" style="padding:5px 14px;font-size:10px" onclick="runWorkflow()" data-tooltip="Animate the workflow end-to-end">Run Workflow</button>
+      <button class="btn-secondary" style="padding:5px 14px;font-size:10px;border-color:var(--card-border);color:var(--text-secondary)" onclick="resetWorkflow()" data-tooltip="Clear animation and return to initial state">Reset</button>
     </div>
   </div>
 
@@ -308,5 +309,6 @@
 <script src="js/workflow.js"></script>
 <script src="js/main.js"></script>
 <script src="js/deep-link.js"></script>
+<script src="js/tooltip.js"></script>
 </body>
 </html>
