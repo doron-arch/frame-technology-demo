@@ -7,9 +7,9 @@ nav {
   padding:0 40px; height:56px; transition:background 0.4s, border-color 0.4s;
 }
 .logo { display:flex; align-items:center; gap:4px; }
-.logo .bracket { font-family:'Helvetica Neue',Helvetica,Arial,sans-serif; font-weight:100; font-size:28px; color:var(--text-primary); letter-spacing:4px; transition:color 0.4s; }
-.logo .word { font-family:'Bebas Neue',sans-serif; font-size:24px; letter-spacing:5px; color:var(--text-primary); transition:color 0.4s; }
-.logo .tagline { font-family:'Inter',sans-serif; font-size:8px; letter-spacing:2.5px; text-transform:uppercase; color:var(--text-secondary); opacity:0.6; margin-left:16px; }
+.logo .bracket { font-family:'Helvetica Neue',Helvetica,Arial,sans-serif; font-weight:100; font-size:28px; color:#4FC3F7; letter-spacing:4px; transition:color 0.4s; }
+.logo .word { font-family:'Bebas Neue',sans-serif; font-size:24px; letter-spacing:5px; color:#4FC3F7; transition:color 0.4s; }
+.logo .tagline { font-family:'Bebas Neue',sans-serif; font-size:10px; letter-spacing:4px; text-transform:uppercase; color:#6670A0; margin-left:16px; }
 .nav-tabs { display:flex; gap:0; }
 .nav-tab {
   font-family:'Bebas Neue',sans-serif; font-size:15px; letter-spacing:2px; text-transform:uppercase;
