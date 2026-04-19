@@ -12,13 +12,14 @@
 <link rel="stylesheet" href="css/mockup-nav.css">
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
 
 <!-- ========= NAVIGATION ========= -->
 <nav>
-  <div class="logo">
+  <h1 class="logo">
     <span class="bracket">[</span><span class="word">FRAME</span><span class="bracket">]</span>
     <span class="tagline">SHARED INTELLIGENCE HUB</span>
-  </div>
+  </h1>
   <div class="nav-tabs">
     <div class="nav-tab active" onclick="showSection('adapt',this)" data-tooltip="Turn one incident into 9 formats × 3 languages × 2 tracks" data-tooltip-below="true" tabindex="0">Adaptation Factory</div>
     <div class="nav-tab" onclick="showSection('pipeline',this)" data-tooltip="7-stage automated pipeline: Hebrew video in → multilingual campaign out" data-tooltip-below="true" tabindex="0">Rapid Response Engine</div>
@@ -27,7 +28,7 @@
   <div class="nav-right">
     <div style="display:flex;align-items:center;gap:6px">
       <span class="mode-label">Dark</span>
-      <button class="mode-toggle" onclick="toggleMode()" title="Toggle light/dark mode" data-tooltip="Switch between light and dark theme" data-tooltip-below="true"></button>
+      <button class="mode-toggle" onclick="toggleMode()" title="Toggle light/dark mode" aria-label="Toggle light/dark mode" data-tooltip="Switch between light and dark theme" data-tooltip-below="true"></button>
       <span class="mode-label">Light</span>
     </div>
     <div class="nav-status" data-tooltip="This is a simulation. No real content is generated." data-tooltip-below="true" tabindex="0">
@@ -37,6 +38,7 @@
   </div>
 </nav>
 
+<main id="main-content">
 <!-- ========= SECTION 1: ADAPTATION FACTORY ========= -->
 <div id="adapt" class="section active">
   <div class="section-header">
@@ -302,6 +304,7 @@
     </div>
   </div>
 </div>
+</main>
 
 <script src="js/frame-schemas.js"></script>
 <script src="js/nav.js"></script>
