@@ -34,7 +34,7 @@ body.light-mode .card:hover { border-color:rgba(24,0,173,0.3); }
 .badge-blue { background:rgba(79,195,247,0.15); color:var(--blue); }
 .badge-coral { background:rgba(255,82,82,0.15); color:var(--coral); }
 .badge-green { background:rgba(102,187,106,0.15); color:#66bb6a; }
-.badge-indigo { background:rgba(24,0,173,0.2); color:#7C4DFF; }
+.badge-indigo { background:rgba(24,0,173,0.2); color:var(--white); }
 
 /* ===== PIPELINE ===== */
 .pipeline { display:flex; align-items:center; gap:0; margin:24px 0; overflow-x:auto; padding:8px 0; }
@@ -51,7 +51,7 @@ body.light-mode .card:hover { border-color:rgba(24,0,173,0.3); }
 .pipe-label { font-size:10px; color:var(--text-secondary); text-align:center; max-width:90px; letter-spacing:0.5px; }
 .pipe-step.done .pipe-label { color:var(--accent); }
 .pipe-step.active .pipe-label { color:var(--text-primary); font-weight:600; }
-.pipe-arrow { color:var(--card-border); font-size:20px; margin:0 4px; margin-bottom:20px; }
+.pipe-arrow { color:var(--text-secondary); font-size:20px; margin:0 4px; margin-bottom:20px; }
 .pipe-step.done + .pipe-arrow { color:var(--accent); }
 
 /* ===== RATIO CARD ===== */
