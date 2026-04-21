@@ -20,13 +20,14 @@ function toggleMode() {
 // ── Cross-tab theme sync ──
 (function applyStoredTheme() {
   const saved = localStorage.getItem('frame-theme');
-  if (saved === 'light' && !document.body.classList.contains('light-mode')) {
-    document.body.classList.add('light-mode');
-    isDark = false;
-  } else if (saved === 'dark' && document.body.classList.contains('light-mode')) {
-    document.body.classList.remove('light-mode');
-    isDark = true;
+  let prefersDark;
+  if (saved) {
+    prefersDark = saved === 'dark';
+  } else {
+    prefersDark = !window.matchMedia('(prefers-color-scheme: light)').matches;
   }
+  isDark = prefersDark;
+  document.body.classList.toggle('light-mode', !prefersDark);
 })();
 
 window.addEventListener('storage', function(e) {
